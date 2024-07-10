@@ -1,28 +1,22 @@
-# Используем официальный образ Ubuntu
-FROM ubuntu:20.04
-
-# Обновление и установка необходимых пакетов
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    usbutils \
-    linux-headers-generic \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Установка Rust с использованием rustup
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Установка переменной окружения
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Этап сборки
+FROM rust:latest AS builder
 
 # Создание рабочей директории
-WORKDIR /usr/src/card-reader
+WORKDIR /usr/src/card-reader-rust
 
 # Копирование исходного кода в рабочую директорию
-COPY . .
+COPY ./src ./src
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
 
 # Сборка программы
-RUN /root/.cargo/bin/cargo build --release
+RUN cargo build --release
+
+# Финальный этап
+FROM rust:latest
+
+# Копирование скомпилированного бинарного файла из этапа сборки
+COPY --from=builder /usr/src/card-reader-rust/target/release/card-reader-rust .
 
 # Указываем команду для запуска контейнера
 CMD ["bash"]
