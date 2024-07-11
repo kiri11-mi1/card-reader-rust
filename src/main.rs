@@ -64,34 +64,11 @@ fn main() {
         }
 
         let card = card.unwrap();
-        println!(
-            "UUID: {:02X}{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}\n",
-            card.uid[0], card.uid[1], card.uid[2], card.uid[3], card.uid[4], card.uid[5], card.uid[6]
-        );
-
-        // Аутентификация карты
-        // let res = uem_reader.commands().cards().mifare().classic()
-        //     .authenticate_key_a(&card, &[0xFF; 6], 1);
-        //
-        // if res.is_err() {
-        //     println!("Failed to authenticate card. Retrying in 1 second...");
-        //     thread::sleep(Duration::from_secs(1));
-        //     continue;
-        // }
-
-        // Чтение данных с карты
-        // let res = uem_reader.commands().cards().mifare().classic()
-        //     .read(1, 1);
-        //
-        // if res.is_err() {
-        //     println!("Failed to read from card. Retrying in 1 second...");
-        //     thread::sleep(Duration::from_secs(1));
-        //     continue;
-        // }
-        //
-        // // Вывод данных карты
-        // let card_data = res.unwrap();
-        // println!("Card data: {:?}", card_data);
+        let mut uuid_string = String::new();
+        for byte in &card.uid {
+            uuid_string.push_str(&format!("{:02X}", byte));
+        }
+        println!("UID: {}\n", uuid_string);
 
         // Ожидание перед следующей итерацией для предотвращения мгновенного повторного чтения
         thread::sleep(Duration::from_secs(1));
