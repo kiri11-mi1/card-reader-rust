@@ -58,12 +58,16 @@ fn main() {
             continue;
         }
 
-        // Beep 1 time using command byte vector
+        // Сигналим если карта обнаружена
         if uem_reader.send(&vec![0x05_u8, 0x01_u8]).is_err() {
             return;
         }
 
         let card = card.unwrap();
+        println!(
+            "UUID: {:02X}{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}\n",
+            card.uid[0], card.uid[1], card.uid[2], card.uid[3], card.uid[4], card.uid[5], card.uid[6]
+        );
 
         // Аутентификация карты
         // let res = uem_reader.commands().cards().mifare().classic()
@@ -76,18 +80,18 @@ fn main() {
         // }
 
         // Чтение данных с карты
-        let res = uem_reader.commands().cards().mifare().classic()
-            .read(1, 1);
-
-        if res.is_err() {
-            println!("Failed to read from card. Retrying in 1 second...");
-            thread::sleep(Duration::from_secs(1));
-            continue;
-        }
-
-        // Вывод данных карты
-        let card_data = res.unwrap();
-        println!("Card data: {:?}", card_data);
+        // let res = uem_reader.commands().cards().mifare().classic()
+        //     .read(1, 1);
+        //
+        // if res.is_err() {
+        //     println!("Failed to read from card. Retrying in 1 second...");
+        //     thread::sleep(Duration::from_secs(1));
+        //     continue;
+        // }
+        //
+        // // Вывод данных карты
+        // let card_data = res.unwrap();
+        // println!("Card data: {:?}", card_data);
 
         // Ожидание перед следующей итерацией для предотвращения мгновенного повторного чтения
         thread::sleep(Duration::from_secs(1));
