@@ -1,5 +1,5 @@
 # Этап сборки
-FROM rust:latest AS builder
+FROM rust:slim-buster AS builder
 
 # Создание рабочей директории
 WORKDIR /usr/src/card-reader-rust
@@ -10,13 +10,13 @@ COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
 # Сборка программы
-RUN cargo build --release
+RUN cargo build
 
 # Финальный этап
-FROM rust:latest
+FROM debian:latest
 
 # Копирование скомпилированного бинарного файла из этапа сборки
-COPY --from=builder /usr/src/card-reader-rust/target/release/card-reader-rust .
+COPY --from=builder /usr/src/card-reader-rust/target/debug/card-reader-rust .
 
 # Указываем команду для запуска контейнера
 CMD ["bash"]
